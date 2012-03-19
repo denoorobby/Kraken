@@ -1,0 +1,6 @@
+= kraken
+
+Describe your project here
+
+:include:kraken.rdoc
+

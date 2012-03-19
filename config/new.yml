@@ -1,0 +1,27 @@
+folders: 
+  app:
+    -
+      scripts:
+        - collections:mvc
+        - models:mvc
+        - views:mvc
+    - images
+    - styles
+  vendor:
+    -
+      scripts:
+        - collections:mvc
+        - models:mvc
+        - views:mvc
+    - images
+    - styles
+files:
+  index.html:
+    template: index.html.mustache
+    path: index.html 
+  app.js:
+    template: app.js.mustache
+    path: app/scripts/
+          
+      
+    

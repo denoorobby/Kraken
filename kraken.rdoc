@@ -1,0 +1,5 @@
+= kraken
+
+Generate this with
+    kraken rdoc
+After you have described your command line interface
