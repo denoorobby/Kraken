@@ -79,10 +79,29 @@ end
 
 
 #Command: generate
-desc 'Create something from a template'
-arg_name 'Describe arguments to generate here'
+desc 'Create something new'
+arg_name 'item'
 command :generate do |c|
   c.action do |global_options,options,args|
+    if args.length < 1
+      raise 'You specify what it is that you want to generate'
+    end
+
+    root = File.expand_path(".")
+
+    case args[0].downcase
+    when 'folders'
+      if args.length < 2
+        raise 'You must supply a json hash or array of folders to create'
+      end
+
+      data = args[1]
+
+      createFolders(root, data, options) 
+
+    else
+      raise "Don't know how to generate item: #{ args[0] }"
+    end
   end
 end
 

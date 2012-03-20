@@ -1,3 +1,5 @@
+require 'json'
+
 def createFoldersFromHash(root, hash, settings, &filter)
 
     raise 'expected arg to be a hash' unless hash.is_a? Hash
@@ -9,9 +11,8 @@ def createFoldersFromHash(root, hash, settings, &filter)
 
       #each key is created as a folder
       if createFolder(path_name, settings, &filter)
-      
-        #each value is created according to its type
-        createFolders(path_name, value, settings, &filter)
+          #each value is created according to its type
+          createFolders(path_name, value, settings, &filter)
       end
     }
 end
@@ -32,7 +33,14 @@ def createFolders(root, obj, settings, &filter)
     elsif obj.is_a? Hash
       createFoldersFromHash(root, obj, settings, &filter)
     elsif obj.is_a? String
-      createFolder(File.join(root, obj), settings, &filter)
+      data = obj.strip
+      unless data.empty?
+        begin
+          createFolders(root, JSON.parse(data), settings, &filter)
+        rescue Exception => e
+          raise e
+        end
+      end
     else
       raise "unexpected object type " + obj.inspect  
     end
