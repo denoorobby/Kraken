@@ -20,34 +20,38 @@ end
 def createFoldersFromArray(root, array, settings, &filter)
 
     raise 'expected arg to be an array' unless array.is_a? Array
-
-    array.each { |value|
-      createFolders(root, value, settings, &filter)
-    }
+    array.each {|x| createFolders(root, x, settings, &filter) }
 end
 
 def createFolders(root, obj, settings, &filter)
 
-    if obj.is_a? Array
-      createFoldersFromArray(root, obj, settings, &filter)
-    elsif obj.is_a? Hash
-      createFoldersFromHash(root, obj, settings, &filter)
-    elsif obj.is_a? String
-      data = obj.strip
+    puts "createFolders: #{obj.inspect}:#{obj.class}"
+    data = obj
+    if data.is_a? Array
+      createFoldersFromArray(root, data, settings, &filter)
+    elsif data.is_a? Hash
+      createFoldersFromHash(root, data, settings, &filter)
+    elsif data.is_a? String
+      data = data.strip.gsub('\"', '"')
       unless data.empty?
         begin
-          createFolders(root, JSON.parse(data), settings, &filter)
-        rescue Exception => e
-          raise e
+            puts "going to parse: #{data}"
+            data = JSON.parse(data)
+            unless data.nil? || data.empty?
+              return createFolders(root, data, settings, &filter)
+            end
+        rescue => e
+          #if it doesn't parse as json, treat it like a string below
+          createFolder(File.join(root, data), settings, &filter)
         end
       end
     else
-      raise "unexpected object type " + obj.inspect  
+      raise "unexpected object type " + data.inspect  
     end
 end
 
 def createFolder(path_name, settings, &filter)
-    
+  
     if filter
       path_name = filter.call(path_name)
     end

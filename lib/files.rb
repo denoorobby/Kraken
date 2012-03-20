@@ -1,3 +1,5 @@
+module Kraken
+
 def createFiles(root, obj, settings, &filter)
 
     if obj.is_a? Hash
@@ -5,5 +7,7 @@ def createFiles(root, obj, settings, &filter)
     else
       raise "unexpected object type " + obj.inspect  
     end
+end
+
 end
 
