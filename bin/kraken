@@ -23,59 +23,8 @@ require 'yaml'
 
 include GLI
 
-program_desc 'kraken - mobile app framework tool'
-
+program_desc 'kraken - a legendary sea monster of giant proportions. But this is just a tool that terrorizes small children.' 
 version Kraken::VERSION
-
-
-#global dry-run switch applies to all commands
-desc 'Dry-run, no changes will be made to the disk'
-switch [:n, 'dry-run', :dryrun]
-
-
-#Command: new
-desc 'Create a new project'
-arg_name 'project_name'
-command :new do |c|
-
-  c.desc 'Overwrite/ignore existing files and directories'
-  c.switch [:f,:force]
-
-  c.desc 'Include support for mvc'
-  c.switch [:m,:mvc]
-
-  c.action do |global_options,options,args|
-    
-    if args.length < 1
-      raise 'You must specify name of your new project'
-    end
-    
-    settings = {}
-    settings[:force] = options[:force]
-    settings[:dryrun] = global_options[:dryrun]
-    settings[:mvc] = settings['mvc'] = true if options[:mvc]
-    
-    root = File.expand_path(args[0])
-
-    createFolder(root, settings)
-
-    config = YAML.load_file("#{CONFIG_ROOT}/new.yml")
-       
-    createFolders( root, config['folders'], settings ){ |path_name| filterPath(path_name, settings) }
-    createFiles( root, config['files'], settings){ |path_name| filterPath(path_name, settings) }
-
-  end
-end
-
-
-#Command: server
-desc 'Launch a web server and run app'
-arg_name 'Describe arguments to server here'
-command :server do |c|
-  c.action do |global_options,options,args|
-
-  end
-end
 
 
 #Command: generate
@@ -84,7 +33,7 @@ arg_name 'item'
 command :generate do |c|
   c.action do |global_options,options,args|
     if args.length < 1
-      raise 'You specify what it is that you want to generate'
+      raise 'You specify what it is that you want to generate. Try "folders".'
     end
 
     root = File.expand_path(".")
@@ -140,22 +89,5 @@ on_error do |exception|
   true
 end
 
-def filterPath(path_name, settings)
-    #Filter block for filtering paths before they are created.
-    #Why? A folder path can have a series of tags (comma delimited) appended after a colon
-    #the tags map to the switches specified on the commandline
-    #so for example, if a path is appended with :mvc,jasmine then this means
-    #that the folder should only be created if the mvc and jasmine switches are present 
-    tags = path_name.slice!(/:(\S+)\z/, 1)
-    if tags 
-      tags.split(',').each {|tag| 
-        if !settings[tag]
-          puts "excluding path: #{ path_name }. switch '#{tag}' not specified"
-          path_name = ''
-        end
-      }
-    end
-    path_name
-end  
 
 exit GLI.run(ARGV)
