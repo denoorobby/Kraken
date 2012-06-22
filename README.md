@@ -1,39 +1,11 @@
 #Kraken
 
-Kraken is a command-line tool for generating web and mobile apps.
+A toolkit for web development, with a penchant for mobile-related tech.
 
-##Commands
+Still murky, but one idea is to create templates that use various libraries, then reverse-engineer them to be auto-generatable. We'll have to keep versioning in mind though.
 
-###New
-Creates a new project. 
+##Templates
 
-The file and directory structure are defined within config/new.yml.
+##Generator
 
-New implicity calls several of kraken's generators.
-
-
-    kraken new my_project
- 
-###Server
-
-*WIP*
-
-Runs a simple web server
-
-
-    kraken server
-
-###Generate
-Create something from a template
-
-####Folders
-    
-kraken generate folders [json hash or array]
-
-    kraken generate folders { folder1: [ file1, file2, folder2: { [ file3, file4 ] } ] }
-
-####Files
-
-*WIP*
-
-kraken generate files [ json ]
+See [/generator/README.md](https://github.com/upstart/Kraken/blob/master/generator/README.md) for more info.
