@@ -6,6 +6,8 @@ Still murky, but one idea is to create templates that use various libraries, the
 
 ##Templates
 
+- bootstrap-iscroll: Uses Bootstrap and iScroll to create a responsive UX
+
 ##Generator
 
 See [/generator/README.md](https://github.com/upstart/Kraken/blob/master/generator/README.md) for more info.
