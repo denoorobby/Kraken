@@ -1,6 +1,7 @@
 /*
  * This is a fast and lightweight template rendering solution built off of underscore.js.
- * Only the necessary bits of underscore are included.
+ * Only the necessary bits of underscore are included. 
+ *
  *
  * The following enhancements are included: 
  *
@@ -14,6 +15,9 @@
  *   See http://documentcloud.github.com/underscore/#template for more info.
  *
  *   See test.html for a sample usage of this code.
+ *
+ * Note: If you happen to have already loaded underscore, this script will defer to that instance.
+ *       That is, it will not load its subset of underscore over an existing instance of underscore.
  *
  *
  *
