@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>_tmpl Tests</title>
+  <script type="text/javascript" src="_tmpl.min.js"></script>
+</head>
+<body>
+  <h1>_tmpl Tests</h1>
+  <br />
+  <div id="test-output">
+  </div>
+
+  <script id="i-am-a-template" type="text/x-javascript-template">
+    <div>
+        <a href="{{ url }}" >
+          <strong>{{ greeting }}</strong>
+          <span>{{ city }}, {{ state }}</span>
+        </a>
+    </div>
+  </script>
+  <script>
+    function testRendering(){
+      document.getElementById('test-output').innerHTML = 
+        window.UL.renderTemplate('i-am-a-template', { 
+          url: "http://upstartlabs.com", 
+          greeting: "Greetings from ", 
+          city: "Portland", 
+          state: "Oregon" 
+        });
+    }
+
+    console.log("Testing rendering the first time");
+    testRendering();
+
+    console.log(window.UL.templateCache);
+
+    console.log("Testing to see if the template is cached");
+    var element = document.getElementById("i-am-a-template");
+    element.parentNode.removeChild(element); 
+    document.getElementById('test-output').innerHTML = "";
+    setTimeout(testRendering, 1000);
+
+  </script>
+</body>
+</html>
