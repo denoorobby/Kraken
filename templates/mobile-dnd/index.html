@@ -34,12 +34,9 @@
       margin: 20px 0 0 20px;
       width: 100px;
       height: 100px;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
       overflow: hidden;
       opacity: .7;
-      -webkit-transition: -webkit-transform .1s;
+      /* -webkit-transition: -webkit-transform .1s; */
     }
     
     .holding {
@@ -77,25 +74,38 @@
     prevent_default:true
   }).bind("hold",function(ev){
     debug("hold "+$(this).attr('id'));
+    
+    // pick up the element
     $(this).addClass('holding');
     $(this).css({'z-index':parseInt($(this).css('z-index'))+1});
+    // vector maths!
     originalLeft = $(this).offset().left-20;
     originalTop = $(this).offset().top-20;
+    // insert placeholder
+    $(this).after("<div class='placeholder box'><div>");
+    
   }).bind("drag",function(ev){
     if ($(this).hasClass("holding")) {
       debug("drag "+$(this).attr('id'));
+      // move this
       $(this).css({
-      'left':(originalLeft+ev.distanceX)+"px",
-      'top':(originalTop+ev.distanceY)+"px"
-    });
+        'left':(originalLeft+ev.distanceX)+"px",
+        'top':(originalTop+ev.distanceY)+"px"
+      });
+      // move placeholder
+      // TODO
     }
   }).bind("release",function(ev){
     debug("release "+$(this).attr('id'));
+    // drop element
     $(this).removeClass('holding');
+    // make sure element is ready to pick up again
     $(this).css({
       'left':$(this).offset().left-20,
       'top':$(this).offset().top-20
     });
+    // remove placeholder
+    $(".placeholder").remove();
   });
 </script>
 </body>
