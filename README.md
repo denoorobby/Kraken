@@ -6,7 +6,17 @@ Still murky, but one idea is to create templates that use various libraries, the
 
 ##Templates
 
+Each template has its own README listing its name, type and description. Template types are pretty vague, but give some indication of intended uses:
+
+- Responsive: this template has different UI based on screen size
+- Mobile-Friendly: this template has one UI that works intuitively across all devices
+
+Template READMEs also describe their limitations and dependencies.
+
+###List of Templates
+
 - bootstrap-iscroll: Uses Bootstrap and iScroll to create a responsive UX
+- mobile-dnd: Uses Bootstrap and HTML5 to create a mobile drag-n-drop interface
 
 ##Generator
 See [/generator/README.md](https://github.com/upstart/Kraken/blob/master/generator/README.md) for more info.
