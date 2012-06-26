@@ -8,19 +8,23 @@
   <script type="text/javascript" src="js/hammer.js"></script>
   <script type="text/javascript" src="js/jquery.hammer.js"></script>
   <style>
-    #container {
-      width: 500px;
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      margin-top: 20px;
+      margin-left: 20px;
+      width: 260px;
       height: 500px;
-      overflow: hidden;
       position: relative;
       background: #eee;
       display: inline-block;
-      margin-right: 20px;
     }
     #_debug {
       position: absolute;
-      left: 520px;
-      top: 8px;
+      left: 580px;
+      top: 20px;
       vertical-align: bottom;
       height: 500px;
       width: 500px;
@@ -39,6 +43,10 @@
       /* -webkit-transition: -webkit-transform .1s; */
     }
     
+    #placeholder {
+      background: black;
+    }
+    
     .holding {
       position: absolute;
       float: none;
@@ -46,19 +54,30 @@
     
     #box1 { left: 0; top: 0; background: blue; }
     #box2 { left: 120px; top: 0; background: red; }
-    #box3 { left: 240px; top: 0; background: green; }
-    #box4 { left: 360px; top: 0; background: orange; }
+    #box3 { left: 0; top: 120px; background: green; }
+    #box4 { left: 120px; top: 120px; background: orange; }
+    #box5 { left: 0; top: 0; background: teal; }
+    #box6 { left: 120px; top: 0; background: magenta; }
+    #box7 { left: 0; top: 120px; background: lime; }
+    #box8 { left: 120px; top: 120px; background: yellow; }
   </style>
 </head>
 
 <body>
 
-<div id="container">
+<div class="container">
   <div id="box1" class="box holdable"></div>
   <div id="box2" class="box holdable"></div>
   <div id="box3" class="box holdable"></div>
   <div id="box4" class="box holdable"></div>
 </div>
+<div class="container">
+  <div id="box5" class="box holdable"></div>
+  <div id="box6" class="box holdable"></div>
+  <div id="box7" class="box holdable"></div>
+  <div id="box8" class="box holdable"></div>
+</div>
+
 
   <div id="_debug">debug log:<br></div>
 
@@ -69,43 +88,112 @@
     debug_el.scrollTop = debug_el.scrollHeight;
   }
   
+  function isInside(el,arr) {
+    // returns array of elements that el is inside
+    // these elements are members of arr
+    // just checks the center-point of el
+    var el_x = $(el).offset().left;
+    var el_y = $(el).offset().top;
+    var matches = []
+    $.each(arr,function(i,e){
+      var bound_l = $(e).offset().left;
+      var bound_r = bound_l + $(e).width();
+      var bound_t = $(e).offset().top;
+      var bound_b = bound_t + $(e).height();
+      if (el_x >= bound_l && el_x <= bound_r
+       && el_y >= bound_t && el_y <= bound_b) {
+         matches.push(e);
+       }
+    });
+    return matches;
+  }
+  
   var originalLeft, originalTop;
   $(".box").hammer({
     prevent_default:true
-  }).bind("hold",function(ev){
-    debug("hold "+$(this).attr('id'));
+  })
+  .bind("hold",function(ev){
+    //debug("hold "+$(this).attr('id'));
+    
+    // TODO redo this with cloning
     
     // pick up the element
     $(this).addClass('holding');
     $(this).css({'z-index':parseInt($(this).css('z-index'))+1});
     // vector maths!
-    originalLeft = $(this).offset().left-20;
-    originalTop = $(this).offset().top-20;
+    originalLeft = $(this).position().left;
+    originalTop = $(this).position().top;
     // insert placeholder
-    $(this).after("<div class='placeholder box'><div>");
-    
-  }).bind("drag",function(ev){
+    $(this).after("<div id='placeholder' class='box'><div>");
+  })
+  .bind("drag",function(ev){
     if ($(this).hasClass("holding")) {
-      debug("drag "+$(this).attr('id'));
+      //debug("drag "+$(this).attr('id'));
       // move this
+      newX = originalLeft+ev.distanceX;
+      newY = originalTop+ev.distanceY;
       $(this).css({
-        'left':(originalLeft+ev.distanceX)+"px",
-        'top':(originalTop+ev.distanceY)+"px"
+        'left':(newX)+"px",
+        'top':(newY)+"px"
       });
-      // move placeholder
-      // TODO
+      
+      // remove placeholder
+      $("#placeholder").remove();
+      
+      // which .container is $(this) inside?
+      var inside = isInside($(this),$(".container"));
+      
+      if (inside.length != 0) {
+        
+        // this code knows about the grid already...fixme
+        var grid_cols = 2;
+        var numElem = $(inside).find(".box").length;
+        // get center of this wrt to inside
+        var posX = $(this).offset().left - $(inside).offset().left;
+        var posY = $(this).offset().top - $(inside).offset().top;
+        
+        // how big are the elements in inside? assume all same height
+        var grid_width = $(inside).innerWidth()/grid_cols;
+        var grid_height = 120;
+        
+        // which column and row?
+        col = Math.floor(posX/grid_width);
+        row = Math.floor(posY/grid_height);
+        
+        // what index should #placeholder be?
+        index = grid_cols*row+col;
+        
+        // is index higher than the max?
+        if (index > numElem)
+          index = numElem;
+        // TODO FIXME doesn't cover a couple edge cases
+        if ((index == 0 && numElem == 0) || index == numElem) {
+          // put #placeholder in first
+          $(inside).append("<div id='placeholder' class='box'></div>");
+        } else {
+          // put #placeholder before the one at intended index
+          $($(inside).find(".box")[index]).before("<div id='placeholder' class='box'></div>");
+        }
+      }
+    } else {
+      debug("TODO scroll this div with momentum");
     }
-  }).bind("release",function(ev){
-    debug("release "+$(this).attr('id'));
+  })
+  .bind("release",function(ev){
+    //debug("release "+$(this).attr('id'));
     // drop element
     $(this).removeClass('holding');
-    // make sure element is ready to pick up again
-    $(this).css({
-      'left':$(this).offset().left-20,
-      'top':$(this).offset().top-20
-    });
+    $("#placeholder").after($(this));
     // remove placeholder
-    $(".placeholder").remove();
+    $("#placeholder").remove();
+    // make sure each element is ready to pick up again
+    $.each($(".box"),function(i,e){
+      $(this).css({
+        'left':$(this).position().left,
+        'top':$(this).position().top
+      });
+    });
+    // TODO save order
   });
 </script>
 </body>
